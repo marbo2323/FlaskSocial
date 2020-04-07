@@ -29,6 +29,10 @@ class User(UserMixin, Model):
         except IntegrityError:
             raise ValueError("User already exists")
 
+    @classmethod
+    def user_exists(cls, username):
+        return cls.select().where(User.username == username).exists()
+
 
 def initialize():
     DATABASE.connect()

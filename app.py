@@ -1,5 +1,6 @@
 from flask import (Flask, g, render_template, flash, redirect, url_for)
 from flask_login import LoginManager
+from peewee import IntegrityError
 
 import forms
 import models
@@ -59,13 +60,14 @@ def index():
 
 if __name__ == '__main__':
     models.initialize()
-    # try:
-        # models.User.create(
-        #     username="admin",
-        #     email="admin@snw.com",
-        #     password="admin.123",
-        #     is_admin=True
-        # )
-    # except ValueError:
-    #     pass
+    try:
+         models.User.create_user(
+             username="admin",
+             email="admin@snw.com",
+             password="admin.123",
+             is_admin=True
+         )
+    except ValueError as e:
+        print("Error creating admin user: {}".format(e))
+
     app.run(debug=DEBUG, host=HOST, port=PORT)
