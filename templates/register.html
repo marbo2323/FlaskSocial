@@ -1,4 +1,5 @@
 {% from 'macros.html' import render_field %}
+{% from 'macros.html' import hide_email %}
 
 <form method="POST" action="" class="form">
     {{ form.hidden_tag() }}
@@ -7,3 +8,7 @@
     {% endfor %}
     <button type="submit" id="submit">Register</button>
 </form>
+
+<div>
+    {{ hide_email('test@example.com') }}
+</div>
