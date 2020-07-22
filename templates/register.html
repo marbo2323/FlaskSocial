@@ -1,6 +1,9 @@
+{%  extends "layout.html" %}
+
 {% from 'macros.html' import render_field %}
 {% from 'macros.html' import hide_email %}
 
+{% block content %}
 <form method="POST" action="" class="form">
     {{ form.hidden_tag() }}
     {% for field in form %}
@@ -12,3 +15,4 @@
 <div>
     {{ hide_email('test@example.com') }}
 </div>
+{% endblock %}
