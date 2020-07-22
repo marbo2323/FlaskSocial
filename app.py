@@ -1,6 +1,6 @@
 from flask import (Flask, g, render_template, flash, redirect, url_for)
-from flask_login import LoginManager
-from peewee import IntegrityError
+from flask_login import LoginManager, login_user
+from flask_bcrypt import check_password_hash
 
 import forms
 import models
@@ -12,12 +12,12 @@ HOST = '0.0.0.0'
 app = Flask(__name__)
 app.secret_key = "23wer234.ewfewq4554tr.32534rfew!f34e4543"
 
-login_namager = LoginManager()
-login_namager.init_app(app)
-login_namager.login_view = 'login'
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 
-@login_namager.user_loader
+@login_manager.user_loader
 def load_user(userid):
     try:
         return models.User.get(models.User.id == userid)
@@ -53,6 +53,24 @@ def register():
     return render_template('register.html', form=form)
 
 
+@app.route('/login', methods=('GET', 'POST'))
+def login():
+    form = forms.LoginForm()
+    if form.validate_on_submit():
+        try:
+            user = models.User.get(models.User.email == form.email.data)
+        except models.DoesNotExist:
+            flash("Your email or password doesn't match!", "error")
+        else:
+            if check_password_hash(user.password, form.password.data):
+                login_user(user)
+                flash("You've been logged in!", "success")
+                return redirect(url_for('index'))
+            else:
+                flash("Your email or password doesn't match!", "error")
+    return render_template('login.html', form=form)
+
+
 @app.route('/')
 def index():
     return 'Hey!'
@@ -61,12 +79,12 @@ def index():
 if __name__ == '__main__':
     models.initialize()
     try:
-         models.User.create_user(
-             username="admin",
-             email="admin@snw.com",
-             password="admin.123",
-             is_admin=True
-         )
+        models.User.create_user(
+            username="admin",
+            email="admin@snw.com",
+            password="admin.123",
+            is_admin=True
+        )
     except ValueError as e:
         print("Error creating admin user: {}".format(e))
 
