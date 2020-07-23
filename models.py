@@ -45,7 +45,7 @@ class User(UserMixin, Model):
 class Post(Model):
     timestamp = DateTimeField(default=datetime.datetime.now)
     user = ForeignKeyField(
-        rel_model=User,
+        User,
         related_name='posts'
     )
     content = TextField()
